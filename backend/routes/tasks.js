@@ -4,10 +4,8 @@ const Task = require("../models/task");
 const { body, query, param, validationResult } = require("express-validator");
 const router = express.Router();
 
-// Apply authentication middleware to all task routes
 router.use(auth);
 
-// Create a new task
 router.post(
   "/",
   [
@@ -18,7 +16,6 @@ router.post(
   ],
   async (req, res) => {
     try {
-      // Validate request
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -40,7 +37,6 @@ router.post(
   }
 );
 
-// Get all tasks for the authenticated user with filtering and sorting
 router.get(
   "/",
   [
@@ -53,7 +49,6 @@ router.get(
   ],
   async (req, res) => {
     try {
-      // Validate request
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -79,7 +74,6 @@ router.get(
   }
 );
 
-// Get task statistics
 router.get("/stats", async (req, res) => {
   try {
     const userId = req.user.id;
@@ -92,10 +86,8 @@ router.get("/stats", async (req, res) => {
   }
 });
 
-// Get a specific task by ID
 router.get("/:id", [param("id").isInt().withMessage("Task ID must be an integer")], async (req, res) => {
   try {
-    // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -117,7 +109,6 @@ router.get("/:id", [param("id").isInt().withMessage("Task ID must be an integer"
   }
 });
 
-// Update a task
 router.put(
   "/:id",
   [
@@ -129,7 +120,6 @@ router.put(
   ],
   async (req, res) => {
     try {
-      // Validate request
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -139,7 +129,6 @@ router.put(
       const userId = req.user.id;
       const { title, description, status, dueDate } = req.body;
 
-      // Check if task exists and belongs to this user
       const existingTask = await Task.getTaskById(taskId, userId);
       if (!existingTask) {
         return res.status(404).json({ message: "Task not found" });
@@ -159,10 +148,8 @@ router.put(
   }
 );
 
-// Delete a task
 router.delete("/:id", [param("id").isInt().withMessage("Task ID must be an integer")], async (req, res) => {
   try {
-    // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -171,7 +158,6 @@ router.delete("/:id", [param("id").isInt().withMessage("Task ID must be an integ
     const taskId = req.params.id;
     const userId = req.user.id;
 
-    // Check if task exists and belongs to this user
     const existingTask = await Task.getTaskById(taskId, userId);
     if (!existingTask) {
       return res.status(404).json({ message: "Task not found" });

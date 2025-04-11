@@ -2,7 +2,6 @@ const { sql } = require("./db");
 
 async function initializeDatabase() {
   try {
-    // Create users table
     await sql`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -13,7 +12,6 @@ async function initializeDatabase() {
       )
     `;
 
-    // Create tasks table
     await sql`
       CREATE TABLE IF NOT EXISTS tasks (
         id SERIAL PRIMARY KEY,

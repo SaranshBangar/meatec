@@ -19,34 +19,27 @@ const taskModel = {
     try {
       const { status, searchTerm, sortBy = "created_at", sortOrder = "DESC", limit = 50, offset = 0 } = filters;
 
-      // Build query conditions
       let conditions = [];
       let queryParams = [];
 
-      // Base condition - user's tasks
       conditions.push(`user_id = $${queryParams.length + 1}`);
       queryParams.push(userId);
 
-      // Filter by status if provided
       if (status) {
         conditions.push(`status = $${queryParams.length + 1}`);
         queryParams.push(status);
       }
 
-      // Search term in title or description
       if (searchTerm) {
         conditions.push(`(title ILIKE $${queryParams.length + 1} OR description ILIKE $${queryParams.length + 1})`);
         queryParams.push(`%${searchTerm}%`);
       }
 
-      // Validate sortBy to prevent SQL injection
       const validSortColumns = ["created_at", "updated_at", "due_date", "title", "status"];
       const validatedSortBy = validSortColumns.includes(sortBy) ? sortBy : "created_at";
 
-      // Validate sortOrder
       const validatedSortOrder = sortOrder.toUpperCase() === "ASC" ? "ASC" : "DESC";
 
-      // Build the query string
       const queryString = `
         SELECT * FROM tasks 
         WHERE ${conditions.join(" AND ")}
@@ -56,7 +49,6 @@ const taskModel = {
 
       queryParams.push(limit, offset);
 
-      // Use raw query via executeQuery
       const result = await sql.unsafe(queryString, queryParams);
       return result;
     } catch (error) {

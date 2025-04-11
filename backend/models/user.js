@@ -5,11 +5,9 @@ const { sql } = require("../database/db");
 const userModel = {
   async createUser(name, email, password) {
     try {
-      // Hash the password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      // Insert user into database
       const result = await sql`
         INSERT INTO users (name, email, password)
         VALUES (${name}, ${email}, ${hashedPassword})
@@ -77,7 +75,6 @@ const userModel = {
 
   async updatePassword(userId, currentPassword, newPassword) {
     try {
-      // Get user with password
       const user = await sql`
         SELECT * FROM users WHERE id = ${userId}
       `;
@@ -86,17 +83,14 @@ const userModel = {
         throw new Error("User not found");
       }
 
-      // Validate current password
       const isValid = await bcrypt.compare(currentPassword, user[0].password);
       if (!isValid) {
         throw new Error("Current password is incorrect");
       }
 
-      // Hash the new password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-      // Update password
       await sql`
         UPDATE users
         SET password = ${hashedPassword}
